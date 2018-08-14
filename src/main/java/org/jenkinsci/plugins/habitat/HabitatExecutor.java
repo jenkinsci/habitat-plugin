@@ -31,6 +31,10 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
     private String bldrUrl;
     private String authToken;
     private String format; 
+    private String searchString;
+    private String command;
+    private String path;
+    private String binary;
 
     private VirtualChannel slave;
 
@@ -38,7 +42,8 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
     @DataBoundConstructor
     public HabitatExecutor(
             String task, String directory, String artifact, String channel, String origin, 
-	    String bldrUrl, String authToken, String lastBuildFile, String format
+	    String bldrUrl, String authToken, String lastBuildFile, String format, 
+	    String searchString, String command, String binary, String path
     ) {
         this.setTask(task);
         this.setArtifact(artifact);
@@ -49,6 +54,10 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
         this.setAuthToken(authToken);
         this.setLastBuildFile(lastBuildFile);
         this.setFormat(format);
+        this.setsearchString(searchString);
+        this.setcommand(command);
+	this.setpath(path);
+	this.setbinary(binary);
     }
 
     public String getLastBuildFile() {
@@ -60,6 +69,33 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
         this.lastBuildFile = lastBuildFile;
     }
 
+    public String getpath() {
+        return path;
+    }
+
+    @DataBoundSetter
+    public void setpath(String path) {
+        this.path = path;
+    }
+
+    public String getbinary() {
+        return binary;
+    }
+
+    @DataBoundSetter
+    public void setbinary(String binary) {
+        this.binary = binary;
+    }
+
+    public String getcommand() {
+        return command;
+    }
+
+    @DataBoundSetter
+    public void setcommand(String command) {
+        this.command = command;
+    }
+
     public String getOrigin() {
         return origin;
     }
@@ -67,6 +103,15 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
     @DataBoundSetter
     public void setOrigin(String origin) {
         this.origin = origin;
+    }
+
+    public String getsearchString() {
+        return searchString;
+    }
+
+    @DataBoundSetter
+    public void setsearchString(String searchString) {
+        this.searchString = searchString;
     }
 
     public String getBldrUrl() {
@@ -142,14 +187,27 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
                 return this.buildCommand(isWindows);
             case "promote":
                 return this.promoteCommand(isWindows, log);
+            case "demote":
+                return this.demoteCommand(isWindows, log);
             case "upload":
                 return this.uploadCommand(isWindows, log);
-	    case "export":
+            case "channels":
+                return this.channelsCommand(isWindows, log);
+            case "export":
                 return this.exportCommand(isWindows, log);
+            case "search":
+                return this.searchCommand(isWindows, log);
+            case "config":
+                return this.configCommand(isWindows, log);
+            case "exec":
+                return this.execCommand(isWindows, log);
+            case "binlink":
+                return this.binlinkCommand(isWindows, log);
             default:
                 throw new Exception("Task not yet implemented");
         }
     }
+
 
     private String buildCommand(boolean isWindows) {
         if (isWindows) {
@@ -158,6 +216,7 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
             return String.format("hab studio build %s", this.getDirectory());
         }
     }
+
 
     private String exportCommand(boolean isWindows, PrintStream log) throws Exception {
 
@@ -183,6 +242,54 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
     }
 
 
+    private String binlinkCommand(boolean isWindows, PrintStream log) throws Exception {
+
+        String path = this.getpath();
+        String binary = this.getbinary();
+        String pkgIdent = this.getArtifact();
+
+        if (pkgIdent == null) {
+            LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(log)));
+            pkgIdent = lastBuild.getIdent();
+        }
+
+
+        if (binary == null) {
+            throw new Exception("You must provide a binary to binlink to");
+        }
+	
+        if (path == null) {
+            if (isWindows) {
+                return String.format("hab pkg binlink %s %s", pkgIdent, binary);
+            } else {
+                return String.format("hab pkg binlink %s %s", pkgIdent, binary);
+            }
+        } else {
+            if (isWindows) {
+                return String.format("hab pkg binlink -d %s %s %s", path, pkgIdent, binary);
+            } else {
+                return String.format("hab pkg binlink -d %s %s %s", path, pkgIdent, binary);
+            }
+        }
+    }
+
+
+    private String searchCommand(boolean isWindows, PrintStream log) throws Exception {
+
+        //declaring my list of acceptable values for format
+	String searchString = this.getsearchString();
+	if (searchString == null) {
+	    throw new Exception("Please enter a string for us to search for!");
+        }
+
+        if (isWindows) {
+            return String.format("hab pkg search %s", searchString);
+        } else {
+            return String.format("hab pkg search %s", searchString);
+        }
+    }
+
+
     private String promoteCommand(boolean isWindows, PrintStream log) throws Exception {
         String pkgIdent = this.getArtifact();
         if (pkgIdent == null) {
@@ -201,6 +308,77 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
             return String.format("hab pkg promote %s %s", pkgIdent, channel);
         }
     }
+
+
+    private String channelsCommand(boolean isWindows, PrintStream log) throws Exception {
+        String pkgIdent = this.getArtifact();
+        if (pkgIdent == null) {
+            LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(log)));
+            pkgIdent = lastBuild.getIdent();
+        }
+
+        if (isWindows) {
+            return String.format("hab pkg channels %s", pkgIdent);
+        } else {
+            return String.format("hab pkg channels %s", pkgIdent);
+        }
+    }
+
+
+    private String configCommand(boolean isWindows, PrintStream log) throws Exception {
+        String pkgIdent = this.getArtifact();
+        if (pkgIdent == null) {
+            LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(log)));
+            pkgIdent = lastBuild.getIdent();
+        }
+
+        if (isWindows) {
+            return String.format("hab pkg config %s", pkgIdent);
+        } else {
+            return String.format("hab pkg config %s", pkgIdent);
+        }
+    }
+
+
+    private String execCommand(boolean isWindows, PrintStream log) throws Exception {
+        String pkgIdent = this.getArtifact();
+        if (pkgIdent == null) {
+            LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(log)));
+            pkgIdent = lastBuild.getIdent();
+        }
+
+        String command = this.getcommand();
+        if (command == null) {
+            throw new Exception("Command cannot be null");
+        }
+
+        if (isWindows) {
+            return String.format("hab pkg exec %s %s", pkgIdent, command);
+        } else {
+            return String.format("hab pkg exec %s %s", pkgIdent, command);
+        }
+    }
+
+
+    private String demoteCommand(boolean isWindows, PrintStream log) throws Exception {
+        String pkgIdent = this.getArtifact();
+        if (pkgIdent == null) {
+            LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(log)));
+            pkgIdent = lastBuild.getIdent();
+        }
+
+        String channel = this.getChannel();
+        if (channel == null) {
+            throw new Exception("Channel cannot be null");
+        }
+
+        if (isWindows) {
+            return String.format("hab pkg demote %s %s", pkgIdent, channel);
+        } else {
+            return String.format("hab pkg demote %s %s", pkgIdent, channel);
+        }
+    }
+
 
     private String uploadCommand(boolean isWindows, PrintStream log) throws Exception {
         String lastPackage = this.getLatestPackage(log);

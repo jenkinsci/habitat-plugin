@@ -227,7 +227,7 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
 	    throw new Exception("Format entered is not valid! \n Valid formats: aci, cf, docker, kubernetes, mesos, tar"); 
         }
 	
-	String lastPackage = this.getLatestPackage(log);
+	String lastPackage = this.getLatestPackage(isWindows, log);
         if (!this.slave.call(new FileExistence(lastPackage))) {
             throw new Exception("Could not find hart file " + lastPackage);
         }
@@ -249,7 +249,7 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
         String pkgIdent = this.getArtifact();
 
         if (pkgIdent == null) {
-            LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(log)));
+            LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(isWindows, log)));
             pkgIdent = lastBuild.getIdent();
         }
 
@@ -293,7 +293,7 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
     private String promoteCommand(boolean isWindows, PrintStream log) throws Exception {
         String pkgIdent = this.getArtifact();
         if (pkgIdent == null) {
-            LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(log)));
+            LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(isWindows, log)));
             pkgIdent = lastBuild.getIdent();
         }
 
@@ -313,7 +313,7 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
     private String channelsCommand(boolean isWindows, PrintStream log) throws Exception {
         String pkgIdent = this.getArtifact();
         if (pkgIdent == null) {
-            LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(log)));
+            LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(isWindows, log)));
             pkgIdent = lastBuild.getIdent();
         }
 
@@ -328,7 +328,7 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
     private String configCommand(boolean isWindows, PrintStream log) throws Exception {
         String pkgIdent = this.getArtifact();
         if (pkgIdent == null) {
-            LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(log)));
+            LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(isWindows, log)));
             pkgIdent = lastBuild.getIdent();
         }
 
@@ -343,7 +343,7 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
     private String execCommand(boolean isWindows, PrintStream log) throws Exception {
         String pkgIdent = this.getArtifact();
         if (pkgIdent == null) {
-            LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(log)));
+            LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(isWindows, log)));
             pkgIdent = lastBuild.getIdent();
         }
 
@@ -363,7 +363,7 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
     private String demoteCommand(boolean isWindows, PrintStream log) throws Exception {
         String pkgIdent = this.getArtifact();
         if (pkgIdent == null) {
-            LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(log)));
+            LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(isWindows, log)));
             pkgIdent = lastBuild.getIdent();
         }
 
@@ -381,7 +381,7 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
 
 
     private String uploadCommand(boolean isWindows, PrintStream log) throws Exception {
-        String lastPackage = this.getLatestPackage(log);
+        String lastPackage = this.getLatestPackage(isWindows, log);
         log.println("Last Package: " + lastPackage);
         if (!this.slave.call(new FileExistence(lastPackage))) {
             throw new Exception("Could not find hart " + lastPackage);
@@ -393,9 +393,12 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
         }
     }
 
-    private String getLatestPackage(PrintStream log) throws Exception {
-        LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(log)));
+    private String getLatestPackage(Boolean isWindows, PrintStream log) throws Exception {
+        LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(isWindows, log)));
         String artifact = lastBuild.getArtifact();
+        if (isWindows) {
+            artifact = artifact.replace("\"", "");
+        }
         log.println("Artifact " + artifact + " found in: " + this.getAbsolutePath(this.getDirectory()));
         return this.slave.call(new FileConstructor(Arrays.asList(this.getAbsolutePath(this.getDirectory()), artifact)));
     }
@@ -404,11 +407,16 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
         return this.slave.call(new FilePathFinder(file));
     }
 
-    private String lastBuildPath(PrintStream log) throws Exception {
+    private String lastBuildPath(boolean isWindows, PrintStream log) throws Exception {
         if (this.getLastBuildFile() != null) {
             if (this.getDirectory() == null) {
                 String dir = this.getLastBuildFile();
-                dir = dir.replace("last_build.env", "");
+                if (isWindows) {
+                    dir = dir.replace("last_build.ps1", "");
+                }
+                else {
+                    dir = dir.replace("last_build.env", "");
+                }
                 log.println("Setting Directory: " + dir);
                 this.setDirectory(dir);
             }

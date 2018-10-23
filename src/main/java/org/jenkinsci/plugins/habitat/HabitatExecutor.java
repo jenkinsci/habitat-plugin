@@ -396,9 +396,8 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
     private String getLatestPackage(Boolean isWindows, PrintStream log) throws Exception {
         LastBuild lastBuild = this.slave.call(new LastBuildSlaveRetriever(this.lastBuildPath(isWindows, log)));
         String artifact = lastBuild.getArtifact();
-        if (isWindows) {
-            artifact = artifact.replace("\"", "");
-        }
+        // @TODO: FIXME with isWindows
+        artifact = artifact.replace("\"", "");
         log.println("Artifact " + artifact + " found in: " + this.getAbsolutePath(this.getDirectory()));
         return this.slave.call(new FileConstructor(Arrays.asList(this.getAbsolutePath(this.getDirectory()), artifact)));
     }
@@ -416,6 +415,7 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
                 }
                 else {
                     dir = dir.replace("last_build.env", "");
+                    dir = dir.replace("last_build.ps1", "");
                 }
                 log.println("Setting Directory: " + dir);
                 this.setDirectory(dir);

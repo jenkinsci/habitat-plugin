@@ -30,20 +30,21 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
     private String origin;
     private String bldrUrl;
     private String authToken;
-    private String format; 
+    private String format;
     private String searchString;
     private String command;
     private String path;
     private String binary;
+    private boolean docker;
 
     private VirtualChannel slave;
 
 
     @DataBoundConstructor
     public HabitatExecutor(
-            String task, String directory, String artifact, String channel, String origin, 
-            String bldrUrl, String authToken, String lastBuildFile, String format, 
-            String searchString, String command, String binary, String path
+            String task, String directory, String artifact, String channel, String origin,
+            String bldrUrl, String authToken, String lastBuildFile, String format,
+            String searchString, String command, String binary, String path, boolean docker
     ) {
         this.setTask(task);
         this.setArtifact(artifact);
@@ -58,6 +59,16 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
         this.setcommand(command);
         this.setpath(path);
         this.setbinary(binary);
+        this.setDocker(docker);
+    }
+
+    public boolean getDocker() {
+        return docker;
+    }
+
+    @DataBoundSetter
+    public void setDocker(boolean docker) {
+        this.docker = docker;
     }
 
     public String getLastBuildFile() {
@@ -179,8 +190,7 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
 
 
     private String command(PrintStream log) throws Exception {
-        boolean isWindows = System.getProperty("os.name")
-                .toLowerCase().startsWith("windows");
+        boolean isWindows = !this.slave.call(new WindowsChecker());
 
         switch (this.getTask().trim()) {
             case "build":
@@ -210,10 +220,14 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
 
 
     private String buildCommand(boolean isWindows) {
+        String dockerFlag = "";
+        if (this.getDocker()) {
+          dockerFlag = " --docker ";
+        }
         if (isWindows) {
-            return String.format("hab studio build %s", this.getDirectory());
+            return String.format("hab studio build %s %s", dockerFlag, this.getDirectory());
         } else {
-            return String.format("hab studio build %s", this.getDirectory());
+            return String.format("hab studio build %s %s", dockerFlag, this.getDirectory());
         }
     }
 

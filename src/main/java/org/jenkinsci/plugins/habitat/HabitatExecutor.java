@@ -42,8 +42,8 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
     @DataBoundConstructor
     public HabitatExecutor(
             String task, String directory, String artifact, String channel, String origin, 
-	    String bldrUrl, String authToken, String lastBuildFile, String format, 
-	    String searchString, String command, String binary, String path
+            String bldrUrl, String authToken, String lastBuildFile, String format, 
+            String searchString, String command, String binary, String path
     ) {
         this.setTask(task);
         this.setArtifact(artifact);
@@ -56,8 +56,8 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
         this.setFormat(format);
         this.setsearchString(searchString);
         this.setcommand(command);
-	this.setpath(path);
-	this.setbinary(binary);
+        this.setpath(path);
+        this.setbinary(binary);
     }
 
     public String getLastBuildFile() {
@@ -151,7 +151,7 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
     }
 
     public String getFormat() {
-	return format; 
+        return format;
     }
 
     @DataBoundSetter
@@ -221,13 +221,12 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
     private String exportCommand(boolean isWindows, PrintStream log) throws Exception {
 
         //declaring my list of acceptable values for format
-	List<String> possibleFormats = Arrays.asList("aci", "cf", "docker", "kubernetes", "mesos", "tar");
-	String myformat = this.getFormat();
-	if (!possibleFormats.contains(myformat)) {
-	    throw new Exception("Format entered is not valid! \n Valid formats: aci, cf, docker, kubernetes, mesos, tar"); 
+        List<String> possibleFormats = Arrays.asList("aci", "cf", "docker", "kubernetes", "mesos", "tar");
+        String myformat = this.getFormat();
+        if (!possibleFormats.contains(myformat)) {
+          throw new Exception("Format entered is not valid! \n Valid formats: aci, cf, docker, kubernetes, mesos, tar");
         }
-	
-	String lastPackage = this.getLatestPackage(isWindows, log);
+        String lastPackage = this.getLatestPackage(isWindows, log);
         if (!this.slave.call(new FileExistence(lastPackage))) {
             throw new Exception("Could not find hart file " + lastPackage);
         }
@@ -257,7 +256,7 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
         if (binary == null) {
             throw new Exception("You must provide a binary to binlink to");
         }
-	
+
         if (path == null) {
             if (isWindows) {
                 return String.format("hab pkg binlink %s %s", pkgIdent, binary);
@@ -277,9 +276,9 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
     private String searchCommand(boolean isWindows, PrintStream log) throws Exception {
 
         //declaring my list of acceptable values for format
-	String searchString = this.getsearchString();
-	if (searchString == null) {
-	    throw new Exception("Please enter a string for us to search for!");
+        String searchString = this.getsearchString();
+        if (searchString == null) {
+            throw new Exception("Please enter a string for us to search for!");
         }
 
         if (isWindows) {

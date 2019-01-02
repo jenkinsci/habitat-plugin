@@ -5,7 +5,8 @@
         <!--<revision>1.0-alpha-1</revision>-->
         <!--<changelist>-SNAPSHOT</changelist>-->
         <!--<jclouds.version>2.1.0</jclouds.version>-->
-        <jenkins.version>2.99</jenkins.version>
+        <!-- <jenkins.version>2.99</jenkins.version> -->
+        <jenkins.version>2.156</jenkins.version>
         <!-- <jenkins.version>1.609.1</jenkins.version> -->
         <java.level>8</java.level>
         <!--<workflow-api-plugin.version>2.28-rc343.e9b9e0610374-->

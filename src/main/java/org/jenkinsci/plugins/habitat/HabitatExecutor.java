@@ -222,7 +222,7 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
     private String buildCommand(boolean isWindows) {
         String dockerFlag = "";
         if (this.getDocker()) {
-          dockerFlag = " --docker ";
+          dockerFlag = " -D ";
         }
         if (isWindows) {
             return String.format("hab studio build %s %s", dockerFlag, this.getDirectory());

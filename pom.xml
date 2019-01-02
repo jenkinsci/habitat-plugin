@@ -24,7 +24,7 @@
 
     <artifactId>habitat</artifactId>
     <groupId>com.indellient</groupId>
-    <version>0.5.4-SNAPSHOT</version>
+    <version>0.6.0-SNAPSHOT</version>
     <packaging>hpi</packaging>
 
     <name>Habitat Executor</name>

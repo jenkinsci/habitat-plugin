@@ -1,6 +1,9 @@
 ## [0.5.3](https://github.com/Indellient/habitat-jenkins/tree/v0.5.3) (01-02-2019)
 
 
+## [0.5.3](https://github.com/Indellient/habitat-jenkins/tree/v0.5.3) (01-02-2019)
+
+
 ## [0.2.0](https://github.com/Indellient/habitat-jenkins/tree/v0.2.0) (06-15-2018)
  - License
 

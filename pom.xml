@@ -24,7 +24,7 @@
 
     <artifactId>habitat</artifactId>
     <groupId>com.indellient</groupId>
-    <version>0.6.1</version>
+    <version>0.6.2-SNAPSHOT</version>
     <packaging>hpi</packaging>
 
     <name>Habitat Executor</name>
@@ -40,7 +40,7 @@
         <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
-      <tag>habitat-0.6.1</tag>
+      <tag>habitat-0.1.0</tag>
   </scm>
 
     <developers>

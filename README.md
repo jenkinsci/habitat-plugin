@@ -11,6 +11,24 @@ habitat packages.
 
 ## Usage
 
+### Tasks
+
+Currently the available tasks are:
+
+* `build`: executes a build of a habitat package
+* `upload`: uploads a habitat hart file
+* `promote`: promotes a habitat package
+* `demote`: demotes a habitat package
+* `channels`: lists channels of a specific habitat package
+* `export`: exports a habitat package to a specific format
+  * valid formats: `aci`, `cf`, `docker`, `kubernetes`, `mesos`, `tar`
+* `search`: searches the builder API for a specific string
+* `config`: gets the default configuration from the specified habitat package ident
+* `exec`: executes a command in the context of a habitat package
+* `binlink`: installs and links the habitat package
+
+### Options
+
 ### Example Build and Upload Job
 
 ```
@@ -31,7 +49,7 @@ pipeline {
         }
         stage('build') {
             steps {
-                habitat task: 'build', directory: '.', origin: "${env.HAB_ORIGIN}"
+                habitat task: 'build', directory: '.', origin: "${env.HAB_ORIGIN}", docker: true
             }
         }
         stage('upload') {

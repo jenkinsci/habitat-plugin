@@ -423,13 +423,8 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
         if (this.getLastBuildFile() != null) {
             if (this.getDirectory() == null) {
                 String dir = this.getLastBuildFile();
-                if (isWindows) {
-                    dir = dir.replace("last_build.ps1", "");
-                }
-                else {
-                    dir = dir.replace("last_build.env", "");
-                    dir = dir.replace("last_build.ps1", "");
-                }
+                dir = dir.replace("last_build.env", "");
+                dir = dir.replace("last_build.ps1", "");
                 log.println("Setting Directory: " + dir);
                 this.setDirectory(dir);
             }

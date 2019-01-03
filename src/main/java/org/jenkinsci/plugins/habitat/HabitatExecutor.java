@@ -191,6 +191,11 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
 
     private String command(PrintStream log) throws Exception {
         boolean isWindows = !this.slave.call(new WindowsChecker());
+        if (isWindows) {
+          log.println("Running on windows");
+        } else {
+          log.println("Not running on windows");
+        }
 
         switch (this.getTask().trim()) {
             case "build":

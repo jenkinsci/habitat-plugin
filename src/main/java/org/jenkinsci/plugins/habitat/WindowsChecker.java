@@ -9,7 +9,7 @@ public class WindowsChecker extends MasterToSlaveCallable<Boolean, RuntimeExcept
     public WindowsChecker() { }
 
     /**
-     * @returns Boolean - true if OS is windows.
+     * Returns Boolean - true if OS is windows.
      */
     @Override
     public Boolean call() throws RuntimeException {

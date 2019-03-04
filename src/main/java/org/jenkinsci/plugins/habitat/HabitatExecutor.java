@@ -480,7 +480,7 @@ public class HabitatExecutor extends Builder implements SimpleBuildStep {
         int exitCode = -1;
         try {
             Map<String, String> env = this.getEnv(log);
-            env.putAll(otherEnvs);
+            otherEnvs.putAll(env);
 
             log.println("Build Environment Variables");
             env.forEach((k, v) -> log.println(k + ": " + v));

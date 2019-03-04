@@ -58,3 +58,7 @@ work/
 .DS_Store
 release.properties
 pom.xml.*
+
+.classpath
+.project
+.settings/

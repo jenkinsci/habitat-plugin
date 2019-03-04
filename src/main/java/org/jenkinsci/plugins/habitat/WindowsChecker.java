@@ -8,9 +8,6 @@ public class WindowsChecker extends MasterToSlaveCallable<Boolean, RuntimeExcept
 
     public WindowsChecker() { }
 
-    /**
-     * Returns Boolean - true if OS is windows.
-     */
     @Override
     public Boolean call() throws RuntimeException {
         return System.getProperty("os.name").toLowerCase().startsWith("windows");
